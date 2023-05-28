@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pillatickets/View/logout.dart';
 import 'package:pillatickets/View/scan.dart';
 import 'package:pillatickets/View/ticket.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   final String eventId;
@@ -20,8 +21,22 @@ class _HomeState extends State<Home> {
   int scannedTickets = 0;
   int remainingTickets = 0;
 
+  Future<void> saveEventId() async {
+    // Store the eventId in SharedPreferences
+    if (widget.eventId == '') {
+    } else {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('eventId', widget.eventId);
+    }
+  }
+
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('http://jobfid.com/api/event-tickets-info/${widget.eventId}'));
+    // Retrieve the eventId from SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? SeventId = prefs.getString('eventId');
+
+    final response = await http
+        .get(Uri.parse('http://jobfid.com/api/event-tickets-info/$SeventId'));
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       final data = jsonData['data'];
@@ -36,6 +51,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    saveEventId();
     fetchData();
   }
 
@@ -43,7 +59,6 @@ class _HomeState extends State<Home> {
     await fetchData();
     setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +82,7 @@ class _HomeState extends State<Home> {
                         color: Color(0xFFF4F4F4),
                         fontSize: 25.sp,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins'
-                    ),
+                        fontFamily: 'Poppins'),
                   ),
                 ),
               ),
@@ -123,8 +137,13 @@ class _HomeState extends State<Home> {
               left: 0.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Scan(zoneId: '', eventId: widget.eventId,)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Scan(
+                                zoneId: '',
+                                eventId: widget.eventId,
+                              )));
                 },
                 child: Container(
                   height: 70.h,
@@ -147,8 +166,12 @@ class _HomeState extends State<Home> {
               left: 0.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Ticket(eventId: '',)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Ticket(
+                                eventId: '',
+                              )));
                 },
                 child: Container(
                   height: 70.h,
@@ -171,8 +194,13 @@ class _HomeState extends State<Home> {
               left: 0.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Logout(eventId: '', zoneId: '',)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Logout(
+                                eventId: '',
+                                zoneId: '',
+                              )));
                 },
                 child: Container(
                   height: 70.h,
@@ -199,8 +227,7 @@ class _HomeState extends State<Home> {
                     fontSize: 25.sp,
                     color: Color(0xFFF4F4F4),
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins'
-                ),
+                    fontFamily: 'Poppins'),
               ),
             ),
 
@@ -226,16 +253,14 @@ class _HomeState extends State<Home> {
                               color: Color(0xFFF4F4F4),
                               fontWeight: FontWeight.bold,
                               fontSize: 35.sp,
-                              fontFamily: 'Poppins'
-                          ),
+                              fontFamily: 'Poppins'),
                         ),
                         Text(
                           "EMITIDOS",
                           style: TextStyle(
                               color: Color(0xFFF4F4F4),
                               fontSize: 15.sp,
-                              fontFamily: 'Poppins'
-                          ),
+                              fontFamily: 'Poppins'),
                         ),
                       ],
                     ),
@@ -266,16 +291,14 @@ class _HomeState extends State<Home> {
                               color: Color(0xFF25CB4A),
                               fontWeight: FontWeight.bold,
                               fontSize: 35.sp,
-                              fontFamily: 'Poppins'
-                          ),
+                              fontFamily: 'Poppins'),
                         ),
                         Text(
                           "VALIDADOS",
                           style: TextStyle(
                               color: Color(0xFFF4F4F4),
                               fontSize: 15.sp,
-                              fontFamily: 'Poppins'
-                          ),
+                              fontFamily: 'Poppins'),
                         ),
                       ],
                     ),
@@ -306,16 +329,14 @@ class _HomeState extends State<Home> {
                               color: Color(0xFFF7FB2B),
                               fontWeight: FontWeight.bold,
                               fontSize: 35.sp,
-                              fontFamily: 'Poppins'
-                          ),
+                              fontFamily: 'Poppins'),
                         ),
                         Text(
                           "RESTANTES",
                           style: TextStyle(
                               color: Color(0xFFF4F4F4),
                               fontSize: 15.sp,
-                              fontFamily: 'Poppins'
-                          ),
+                              fontFamily: 'Poppins'),
                         ),
                       ],
                     ),
@@ -329,4 +350,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
