@@ -28,16 +28,16 @@ class _QRScannerPageState extends State<QRScannerPage> {
       setState(() {
         result = event;
         if (result != null && result!.code != null) {
-          print('THis is scan result code : ${result!.code}');
-          print('ZZZZZZZZZZZZZZZZZZ: ${widget.zoneName}');
+
           checkTicketId(result!.code!);
+          controller.pauseCamera();
+          // controller.resumeCamera();
         }
       });
     });
   }
 
   Future<void> checkTicketId(String ticketId) async {
-    print('Ticket id froom function : ${ticketId}');
     try {
       final response = await http.post(
         Uri.parse('https://jobfid.com/api/scan/checkin'),
@@ -48,19 +48,16 @@ class _QRScannerPageState extends State<QRScannerPage> {
       );
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        print(
-            'RESSSSSSSSSSSSSSSSSSSSSSS:   ${decodedResponse['data']['status']}');
+
         final bool isValid = decodedResponse['data']['status'] == 'valid';
         if (isValid) {
           final String name = decodedResponse['data']['booking']['name'];
           final String surname = decodedResponse['data']['booking']['surname'];
           navigateToSuccessPage(name, surname, ticketId);
         } else {
-          print("not valid");
           navigateToFailurePage();
         }
       } else {
-        print("failed 200");
         navigateToFailurePage();
       }
     } catch (e) {

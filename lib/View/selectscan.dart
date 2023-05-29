@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pillatickets/View/camera.dart';
 import 'package:pillatickets/View/scan.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/data.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,8 +30,10 @@ class _SelectScanState extends State<SelectScan> {
 
   Future<List<Zone>> getZones(String eventId) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? SeventId = prefs.getString('eventId');
       var response =
-          await http.get(Uri.https('jobfid.com', 'api/get-zones/$eventId'));
+          await http.get(Uri.https('jobfid.com', 'api/get-zones/$SeventId'));
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         List<Zone> zones = [];
