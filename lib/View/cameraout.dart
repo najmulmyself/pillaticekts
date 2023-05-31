@@ -6,27 +6,38 @@ import 'package:pillatickets/View/qrsuccess.dart';
 import 'package:pillatickets/View/qrunsuccess.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class QRScannerPage extends StatefulWidget {
+class QROutScannerPage extends StatefulWidget {
+  final String zoneName;
   final String zoneId;
-  QRScannerPage({required this.zoneId, required String eventId});
+  QROutScannerPage(
+      {required this.zoneName, required this.zoneId, required String eventId});
 
   @override
-  _QRScannerPageState createState() => _QRScannerPageState();
+  _QROutScannerPageState createState() => _QROutScannerPageState();
 }
 
-class _QRScannerPageState extends State<QRScannerPage> {
+class _QROutScannerPageState extends State<QROutScannerPage> {
   final GlobalKey _globalKey = GlobalKey();
 
   QRViewController? controller;
   Barcode? result;
+
+  String name = '';
+  String surname = '';
+  String email = '';
+  String phone = '';
+  String createdAt = '';
 
   void qr(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((event) {
       setState(() {
         result = event;
+        print('RESULT CODE:${result!.code}');
         if (result != null && result!.code != null) {
           checkTicketId(result!.code!);
+          controller.pauseCamera();
+          // controller.resumeCamera();
         }
       });
     });
@@ -35,32 +46,57 @@ class _QRScannerPageState extends State<QRScannerPage> {
   Future<void> checkTicketId(String ticketId) async {
     try {
       final response = await http.post(
-        Uri.parse('http://api.jobfid.com/api/checkout'),
-        body: {'booking_id': ticketId},
+        Uri.parse('https://jobfid.com/api/scan/checkout'),
+        body: {
+          'ticket_id': ticketId,
+          'zone': widget.zoneName,
+        },
       );
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-        final bool isValid = decodedResponse['valid'] ?? false;
+        print("Entering try block and responsing");
+        final bool isValid = decodedResponse['data']['status'] == 'valid';
+        print("Entering valid block and responsing");
         if (isValid) {
-          final String name = decodedResponse['name'] ?? '';
-          final String surname = decodedResponse['surname'] ?? '';
-          navigateToSuccessPage(name, surname, ticketId);
+          print("Entering name block and responsing");
+          setState(() {
+            name = decodedResponse['data']['ticket']['booking']['name'];
+            surname = decodedResponse['data']['ticket']['booking']['surname'];
+            email = decodedResponse['data']['ticket']['booking']['email'];
+            phone = decodedResponse['data']['ticket']['booking']['mobile'];
+            createdAt = decodedResponse['data']['ticket']['booking']['created_at'];
+          });
+          navigateToSuccessPage(
+              name, surname, ticketId, widget.zoneName, email, phone,createdAt);
         } else {
+          print("AAAA");
           navigateToFailurePage();
         }
       } else {
+        print("BBBBBB");
         navigateToFailurePage();
       }
     } catch (e) {
-      navigateToFailurePage();
+      print('HH: ${e}');
+      navigateToSuccessPage(
+          name, surname, ticketId, widget.zoneName, email, phone,createdAt);
     }
   }
 
-  void navigateToSuccessPage(String name, String surname, String ticketId) {
+  void navigateToSuccessPage(String name, String surname, String ticketId,
+      String zone, String email, String phone,String createdAt) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SuccessPage(name: name, surname: surname, ticketId: ticketId),
+        builder: (context) => SuccessPage(
+          name: name,
+          surname: surname,
+          ticketId: ticketId,
+          zone: widget.zoneName,
+          email: email,
+          phone: phone,
+          createdAt:createdAt,
+        ),
       ),
     );
   }
@@ -69,7 +105,9 @@ class _QRScannerPageState extends State<QRScannerPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FailurePage(zoneId: '',),
+        builder: (context) => FailurePage(
+          zoneId: widget.zoneId,
+        ),
       ),
     );
   }
@@ -79,12 +117,6 @@ class _QRScannerPageState extends State<QRScannerPage> {
     controller?.dispose();
     super.dispose();
   }
-
-  @override
-  void reassemble() async {
-    super.reassemble();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +140,10 @@ class _QRScannerPageState extends State<QRScannerPage> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0.h),
               child: Text(
                 'Scan QR Code',
-                style: TextStyle(fontSize: 20, color: Colors.white),
+                style: TextStyle(fontSize: 20.sp, color: Colors.white),
               ),
             ),
           ),

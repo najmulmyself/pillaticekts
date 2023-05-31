@@ -9,6 +9,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 class QRScannerPage extends StatefulWidget {
   final String zoneName;
   final String zoneId;
+
   QRScannerPage(
       {required this.zoneName, required this.zoneId, required String eventId});
 
@@ -22,13 +23,19 @@ class _QRScannerPageState extends State<QRScannerPage> {
   QRViewController? controller;
   Barcode? result;
 
+  String name = '';
+  String surname = '';
+  String email = '';
+  String phone = '';
+  String createdAt = '';
+
   void qr(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((event) {
       setState(() {
         result = event;
+        print('RESULT CODE:${result!.code}');
         if (result != null && result!.code != null) {
-
           checkTicketId(result!.code!);
           controller.pauseCamera();
           // controller.resumeCamera();
@@ -48,30 +55,50 @@ class _QRScannerPageState extends State<QRScannerPage> {
       );
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(response.body);
-
+        print("Entering try block and responsing");
         final bool isValid = decodedResponse['data']['status'] == 'valid';
+        print("Entering valid block and responsing");
         if (isValid) {
-          final String name = decodedResponse['data']['booking']['name'];
-          final String surname = decodedResponse['data']['booking']['surname'];
-          navigateToSuccessPage(name, surname, ticketId);
+          print("Entering name block and responsing");
+          setState(() {
+            name = decodedResponse['data']['ticket']['booking']['name'];
+            surname = decodedResponse['data']['ticket']['booking']['surname'];
+            email = decodedResponse['data']['ticket']['booking']['email'];
+            phone = decodedResponse['data']['ticket']['booking']['mobile'];
+            createdAt =
+                decodedResponse['data']['ticket']['booking']['created_at'];
+          });
+          navigateToSuccessPage(
+              name, surname, ticketId, widget.zoneName, email, phone,createdAt);
         } else {
+          print("AAAA");
           navigateToFailurePage();
         }
       } else {
+        print("BBBBBB");
         navigateToFailurePage();
       }
     } catch (e) {
-      print(e);
-      navigateToFailurePage();
+      print('HH: ${e}');
+      navigateToSuccessPage(
+          name, surname, ticketId, widget.zoneName, email, phone,createdAt);
     }
   }
 
-  void navigateToSuccessPage(String name, String surname, String ticketId) {
+  void navigateToSuccessPage(String name, String surname, String ticketId,
+      String zone, String email, String phone,String createdAt) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            SuccessPage(name: name, surname: surname, ticketId: ticketId),
+        builder: (context) => SuccessPage(
+          name: name,
+          surname: surname,
+          ticketId: ticketId,
+          zone: widget.zoneName,
+          email: email,
+          phone: phone,
+          createdAt: createdAt,
+        ),
       ),
     );
   }

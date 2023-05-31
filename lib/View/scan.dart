@@ -162,7 +162,7 @@ class Scan extends StatelessWidget {
               left: 90.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SelectScan(eventId: eventId,)));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SelectScan(eventId: eventId,isCheckOut: false,)));
                 },
                 child: Container(
                   height: 45.h,
@@ -191,7 +191,7 @@ class Scan extends StatelessWidget {
               left: 90.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SelectScan(eventId: '',)));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SelectScan(eventId: '',isCheckOut: true,)));
                 },
                 child: Container(
                   height: 45.h,

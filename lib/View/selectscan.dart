@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pillatickets/View/camera.dart';
+import 'package:pillatickets/View/cameraout.dart';
 import 'package:pillatickets/View/scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/data.dart';
@@ -11,8 +12,9 @@ import 'package:http/http.dart' as http;
 class SelectScan extends StatefulWidget {
   final String eventId;
   late String selectedId;
+  bool isCheckOut = false;
 
-  SelectScan({Key? key, required this.eventId}) : super(key: key);
+  SelectScan({required this.eventId, required this.isCheckOut});
 
   @override
   _SelectScanState createState() => _SelectScanState();
@@ -31,7 +33,7 @@ class _SelectScanState extends State<SelectScan> {
   Future<List<Zone>> getZones(String eventId) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? SeventId = prefs.getString('eventId');
+      String? SeventId = prefs.getString('eventId');
       var response =
           await http.get(Uri.https('jobfid.com', 'api/get-zones/$SeventId'));
       if (response.statusCode == 200) {
@@ -163,19 +165,37 @@ class _SelectScanState extends State<SelectScan> {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => QRScannerPage(
-                                                zoneName: zones[index]
-                                                    .zoneName
-                                                    .toString(),
-                                                zoneId: zones[index]
-                                                    .zoneId
-                                                    .toString(),
-                                                eventId: widget.eventId),
-                                          ),
-                                        );
+                                        widget.isCheckOut == false
+                                            ? Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      QRScannerPage(
+                                                          zoneName: zones[index]
+                                                              .zoneName
+                                                              .toString(),
+                                                          zoneId: zones[index]
+                                                              .zoneId
+                                                              .toString(),
+                                                          eventId:
+                                                              widget.eventId),
+                                                ),
+                                              )
+                                            : Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      QROutScannerPage(
+                                                          zoneName: zones[index]
+                                                              .zoneName
+                                                              .toString(),
+                                                          zoneId: zones[index]
+                                                              .zoneId
+                                                              .toString(),
+                                                          eventId:
+                                                              widget.eventId),
+                                                ),
+                                              );
                                       },
                                       child: ListTile(
                                         title: Center(

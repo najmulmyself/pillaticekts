@@ -9,9 +9,20 @@ class SuccessPage extends StatelessWidget {
   final String name;
   final String surname;
   final String ticketId;
+  final String zone;
+  final String email;
+  final String phone;
+  final String createdAt;
 
-  const SuccessPage({Key? key, required this.name, required this.surname, required this.ticketId})
-      : super(key: key);
+  const SuccessPage({
+    required this.name,
+    required this.surname,
+    required this.ticketId,
+    required this.zone,
+    required this.email,
+    required this.phone,
+    required this.createdAt,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +82,12 @@ class SuccessPage extends StatelessWidget {
               left: 0.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Home(eventId: '',)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Home(
+                                eventId: '',
+                              )));
                 },
                 child: Container(
                   height: 70.h,
@@ -95,8 +110,12 @@ class SuccessPage extends StatelessWidget {
               left: 0.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Home(eventId: '',)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Home(
+                                eventId: '',
+                              )));
                 },
                 child: Container(
                   height: 70.h,
@@ -119,8 +138,12 @@ class SuccessPage extends StatelessWidget {
               left: 0.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Ticket(eventId: '',)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Ticket(
+                                eventId: '',
+                              )));
                 },
                 child: Container(
                   height: 70.h,
@@ -143,8 +166,13 @@ class SuccessPage extends StatelessWidget {
               left: 0.w,
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Logout(eventId: '', zoneId: '',)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Logout(
+                                eventId: '',
+                                zoneId: '',
+                              )));
                 },
                 child: Container(
                   height: 70.h,
@@ -192,7 +220,8 @@ class SuccessPage extends StatelessWidget {
                   ),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 20.h),
-                    child: Text('Status: VÁLIDO',
+                    child: Text(
+                      'Status: VÁLIDO',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 25.sp,
@@ -202,14 +231,16 @@ class SuccessPage extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Text('Name: $name ',
+                      Text(
+                        'Name: $name ',
                         style: TextStyle(
                           fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      Text('Surname: $surname',
+                      Text(
+                        'Surname: $surname',
                         style: TextStyle(
                           fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
@@ -218,11 +249,47 @@ class SuccessPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Text('Ticket ID: $ticketId',
+                  Text(
+                    'Ticket ID: $ticketId',
                     style: TextStyle(
                       fontSize: 16.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '$createdAt',
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 20.h),
+                    child: Text(
+                      '$zone Ticket',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Email: $email',
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'Phone: $phone',
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ],
